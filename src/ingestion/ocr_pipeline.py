@@ -14,6 +14,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
+from src.config import GEMINI_VISION_MODEL
 
 # Lazy import to avoid errors at module load if key not set yet
 _genai = None
@@ -43,7 +44,6 @@ class OCRResult:
     confidence:  Estimated confidence 0.0–1.0.
     raw_text:    Unprocessed output from the vision model.
     method:      How OCR was performed (e.g. 'gemini_vision').
-    image_path:  Path to the source image file.
     """
     text: str
     confidence: float
@@ -53,23 +53,14 @@ class OCRResult:
 
 
 def image_to_base64(image_path: Path) -> str:
-    """Read an image file and return its base64-encoded string.
-
-    Parameters
-    ----------
-    image_path: Path to the image file.
-
-    Returns
-    -------
-    str  Base64-encoded image bytes.
-    """
+    """Read an image file and encode it as a base64 string."""
     with open(image_path, "rb") as f:
         return base64.b64encode(f.read()).decode("utf-8")
 
 
 def ocr_with_gemini_vision(
     image_path: Path,
-    model_name: str = "gemini-1.5-pro",
+    model_name: str = GEMINI_VISION_MODEL,
     api_key: Optional[str] = None,
 ) -> OCRResult:
     """Transcribe handwritten or scanned image text using Gemini Vision.

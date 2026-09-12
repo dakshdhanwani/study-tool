@@ -23,8 +23,8 @@ for d in [DATA_DIR, CHROMA_DIR, PAGE_IMAGES_DIR]:
 
 # ── LLM Settings ───────────────────────────────────────────────────────────────
 GEMINI_API_KEY       = os.getenv("GEMINI_API_KEY", "")
-GEMINI_MODEL         = os.getenv("GEMINI_MODEL", "gemini-1.5-pro")
-GEMINI_VISION_MODEL  = os.getenv("GEMINI_VISION_MODEL", "gemini-1.5-pro")
+GEMINI_MODEL         = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+GEMINI_VISION_MODEL  = os.getenv("GEMINI_VISION_MODEL", "gemini-2.5-flash")
 
 # ── Embedding Settings ─────────────────────────────────────────────────────────
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
@@ -35,11 +35,11 @@ RERANK_TOP_K       = 6    # chunks fed to LLM
 HYBRID_ALPHA       = 0.6  # weight for semantic (1-alpha = BM25)
 
 # ── Chunking Settings ──────────────────────────────────────────────────────────
-CHUNK_SIZE    = 500   # tokens (approximate, measured in chars ÷ 4)
-CHUNK_OVERLAP = 80
+CHUNK_SIZE    = 500   # measured in characters
+CHUNK_OVERLAP = 80    # measured in characters
 
-# ── OCR Settings ───────────────────────────────────────────────────────────────
-OCR_CONFIDENCE_THRESHOLD = 60  # below this → send to vision LLM
+# ── OCR / Confidence Settings ──────────────────────────────────────────────────
+LOW_CONFIDENCE_THRESHOLD = 0.70  # (0.0 to 1.0) chunks below this trigger warning
 
 # ── Conversation Settings ──────────────────────────────────────────────────────
 MAX_HISTORY_TURNS = 10   # rolling window for conversation memory

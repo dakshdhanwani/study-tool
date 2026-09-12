@@ -105,6 +105,17 @@ def extract_pdf_pages(pdf_path: Path, output_image_dir: Optional[Path] = None) -
 
         img_path = _render_page_image(page, output_image_dir, stem, page_num + 1)
 
+        # Fallback to OCR if the page seems to be an image/scan
+        if confidence == 0.5 and img_path:
+            try:
+                from src.ingestion.ocr_pipeline import ocr_with_gemini_vision
+                ocr_res = ocr_with_gemini_vision(Path(img_path))
+                if ocr_res.text and "[OCR FAILED" not in ocr_res.text:
+                    text = ocr_res.text
+                    confidence = ocr_res.confidence
+            except Exception as exc:
+                print(f"[WARN] OCR fallback failed for {img_path}: {exc}", file=sys.stderr)
+
         records.append(PageRecord(
             source_file=pdf_path.name,
             page_number=page_num + 1,
@@ -168,6 +179,18 @@ def extract_slide_pages(pdf_path: Path, output_image_dir: Optional[Path] = None)
 
         confidence = 1.0 if len(slide_text) >= 20 else 0.5
         img_path = _render_page_image(page, output_image_dir, stem, page_num + 1)
+
+        # Fallback to OCR if the page seems to be an image/scan
+        if confidence == 0.5 and img_path:
+            try:
+                from src.ingestion.ocr_pipeline import ocr_with_gemini_vision
+                ocr_res = ocr_with_gemini_vision(Path(img_path))
+                if ocr_res.text and '[OCR FAILED' not in ocr_res.text:
+                    full_text += '\n' + ocr_res.text
+                    confidence = ocr_res.confidence
+            except Exception as exc:
+                import sys
+                print(f'[WARN] OCR fallback failed: {exc}', file=sys.stderr)
 
         records.append(PageRecord(
             source_file=pdf_path.name,

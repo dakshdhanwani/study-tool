@@ -1,0 +1,558 @@
+[
+  {
+    "id": 1,
+    "question": "What is the time complexity of Dijkstra's algorithm with a binary heap?",
+    "type": "single_doc",
+    "expected": "O((V + E) log V)",
+    "answer": "[REFUSED]",
+    "is_refusal": true,
+    "refusal_reason": "Searched for Dijkstra's algorithm and binary heap time complexity, but no relevant passages were found in the provided materials.",
+    "citations": [],
+    "grounding_score": 1.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": [
+      {
+        "file": "slides_01_overview.pdf",
+        "page": 7
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "question": "What are the three cases of the Master Theorem?",
+    "type": "single_doc",
+    "expected": "Case 1: leaves dominate, Case 2: equal, Case 3: root dominates",
+    "answer": "[REFUSED]",
+    "is_refusal": true,
+    "refusal_reason": "Searched for the three cases of the Master Theorem, but no relevant information or passages regarding the Master Theorem were found in the provided materials.",
+    "citations": [],
+    "grounding_score": 1.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": [
+      {
+        "file": "slides_01_overview.pdf",
+        "page": 3
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "question": "What is the time complexity of Merge Sort in all cases?",
+    "type": "single_doc",
+    "expected": "O(n log n)",
+    "answer": "[REFUSED]",
+    "is_refusal": true,
+    "refusal_reason": "Searched for the time complexity of Merge Sort, but no relevant passages were found in the provided materials.",
+    "citations": [],
+    "grounding_score": 1.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": [
+      {
+        "file": "lecture_03_sorting.pdf",
+        "page": 3
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "question": "What data structure does BFS use?",
+    "type": "single_doc",
+    "expected": "Queue",
+    "answer": "[REFUSED]",
+    "is_refusal": true,
+    "refusal_reason": "Searched for Breadth-First Search (BFS) and its associated data structures, but no relevant information was found in the provided materials.",
+    "citations": [],
+    "grounding_score": 1.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": [
+      {
+        "file": "slides_01_overview.pdf",
+        "page": 5
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "question": "What is the worst-case time complexity of Quicksort?",
+    "type": "single_doc",
+    "expected": "O(n\u00b2)",
+    "answer": "[REFUSED]",
+    "is_refusal": true,
+    "refusal_reason": "Searched for the worst-case time complexity of Quicksort, but no information regarding Quicksort or sorting algorithms is present in the provided materials.",
+    "citations": [],
+    "grounding_score": 1.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": [
+      {
+        "file": "lecture_03_sorting.pdf",
+        "page": 4
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "question": "What is the heap property of a max-heap?",
+    "type": "single_doc",
+    "expected": "parent >= children",
+    "answer": "[REFUSED]",
+    "is_refusal": true,
+    "refusal_reason": "Searched for the max-heap property and max-heap details, but no relevant passages were found in the provided materials.",
+    "citations": [],
+    "grounding_score": 1.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": [
+      {
+        "file": "lecture_02_trees.pdf",
+        "page": 3
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "question": "What is a Trie used for?",
+    "type": "single_doc",
+    "expected": "Storing strings / autocomplete / prefix search",
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 52.007778663s. [links {\n  description: \"Learn more abo",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": [
+      {
+        "file": "lecture_02_trees.pdf",
+        "page": 6
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "question": "What does LIFO stand for and which data structure uses it?",
+    "type": "single_doc",
+    "expected": "Last In First Out \u2014 Stack",
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 51.314285094s. [links {\n  description: \"Learn more abo",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": true,
+    "citation_correct": false,
+    "source_docs": [
+      {
+        "file": "lecture_01_basics.pdf",
+        "page": 4
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "question": "What is the amortized cost of push in a dynamic array?",
+    "type": "single_doc",
+    "expected": "O(1) amortized",
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 50.704473018s. [links {\n  description: \"Learn more abo",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": [
+      {
+        "file": "lecture_01_basics.pdf",
+        "page": 2
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "question": "How does Kruskal's algorithm find the MST?",
+    "type": "single_doc",
+    "expected": "Sort edges by weight, add edge if no cycle using Union-Find",
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 50.029537162s. [links {\n  description: \"Learn more abo",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": [
+      {
+        "file": "slides_02_advanced.pdf",
+        "page": 2
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "question": "Compare the time complexity of Dijkstra's and Bellman-Ford algorithms.",
+    "type": "multi_doc",
+    "expected": "Dijkstra O((V+E)logV), Bellman-Ford O(VE)",
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 49.333719277s. [links {\n  description: \"Learn more abo",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": [
+      {
+        "file": "slides_01_overview.pdf",
+        "page": 7
+      },
+      {
+        "file": "slides_01_overview.pdf",
+        "page": 8
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "question": "How do the handwritten notes describe BFS compared to the slides?",
+    "type": "multi_doc",
+    "expected": "Both note queue usage and O(V+E) time",
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 48.616323799s. [links {\n  description: \"Learn more abo",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": [
+      {
+        "file": "handwritten_hard.png",
+        "page": 1
+      },
+      {
+        "file": "slides_01_overview.pdf",
+        "page": 5
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "question": "How does the recursion tree method relate to the Master Theorem?",
+    "type": "multi_doc",
+    "expected": "Recursion tree sums level costs to derive the Master Theorem cases",
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 47.932566754s. [links {\n  description: \"Learn more abo",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": [
+      {
+        "file": "study_notes.md",
+        "page": 2
+      },
+      {
+        "file": "slides_01_overview.pdf",
+        "page": 3
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "question": "Compare Merge Sort and Quicksort in terms of stability and space complexity.",
+    "type": "multi_doc",
+    "expected": "Merge Sort: stable O(n) space; Quicksort: unstable O(log n) space",
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 47.240885574s. [links {\n  description: \"Learn more abo",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": [
+      {
+        "file": "lecture_03_sorting.pdf",
+        "page": 3
+      },
+      {
+        "file": "lecture_03_sorting.pdf",
+        "page": 4
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "question": "What does the study notes say about when greedy algorithms fail, and does this match the slides?",
+    "type": "multi_doc",
+    "expected": "Both say greedy fails on 0-1 Knapsack; use DP instead",
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 46.524863476s. [links {\n  description: \"Learn more abo",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": [
+      {
+        "file": "study_notes.md",
+        "page": 5
+      },
+      {
+        "file": "slides_01_overview.pdf",
+        "page": 12
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "question": "How is the LCS problem defined in the notes and what recurrence does it use?",
+    "type": "multi_doc",
+    "expected": "Longest Common Subsequence; dp[i][j] = dp[i-1][j-1]+1 if match, else max(dp[i-1][j], dp[i][j-1])",
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 45.739757737s. [links {\n  description: \"Learn more abo",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": [
+      {
+        "file": "study_notes.md",
+        "page": 3
+      },
+      {
+        "file": "slides_01_overview.pdf",
+        "page": 10
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "question": "What does the handwritten note say about which algorithm to use for negative edge weights?",
+    "type": "multi_doc",
+    "expected": "Bellman-Ford for negative edges",
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 44.956863511s. [links {\n  description: \"Learn more abo",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": [
+      {
+        "file": "handwritten_hard.png",
+        "page": 1
+      },
+      {
+        "file": "slides_01_overview.pdf",
+        "page": 8
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "question": "Compare BST and Heap for the operation of finding the minimum element.",
+    "type": "multi_doc",
+    "expected": "Heap: O(1) find-min; BST: O(log n) (leftmost node)",
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 44.32931138s. [links {\n  description: \"Learn more abou",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": [
+      {
+        "file": "lecture_02_trees.pdf",
+        "page": 4
+      },
+      {
+        "file": "lecture_02_trees.pdf",
+        "page": 3
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "question": "How do the sorting notes and lecture agree on Timsort?",
+    "type": "multi_doc",
+    "expected": "Both: hybrid insertion+merge sort, stable, O(n log n) worst O(n) best",
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 43.611734489s. [links {\n  description: \"Learn more abo",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": [
+      {
+        "file": "handwritten_clean.png",
+        "page": 1
+      },
+      {
+        "file": "lecture_03_sorting.pdf",
+        "page": 6
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "question": "What is the relationship between Max-Flow and Min-Cut according to the slides?",
+    "type": "multi_doc",
+    "expected": "Max-Flow Min-Cut Theorem: max flow equals min cut capacity",
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 42.80245479s. [links {\n  description: \"Learn more abou",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": [
+      {
+        "file": "slides_02_advanced.pdf",
+        "page": 4
+      }
+    ]
+  },
+  {
+    "id": 21,
+    "question": "Explain the Cook-Levin theorem and its significance.",
+    "type": "unanswerable",
+    "expected": null,
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 42.094848789s. [links {\n  description: \"Learn more abo",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": []
+  },
+  {
+    "id": 22,
+    "question": "What is the Aho-Corasick algorithm?",
+    "type": "unanswerable",
+    "expected": null,
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 41.399251257s. [links {\n  description: \"Learn more abo",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": []
+  },
+  {
+    "id": 23,
+    "question": "Derive the Strassen matrix multiplication recurrence.",
+    "type": "unanswerable",
+    "expected": null,
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 40.797775411s. [links {\n  description: \"Learn more abo",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": []
+  },
+  {
+    "id": 24,
+    "question": "How does the Floyd-Warshall algorithm work step by step?",
+    "type": "unanswerable",
+    "expected": null,
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 40.104722638s. [links {\n  description: \"Learn more abo",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": []
+  },
+  {
+    "id": 25,
+    "question": "What is the Van Emde Boas tree?",
+    "type": "unanswerable",
+    "expected": null,
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 39.44044155s. [links {\n  description: \"Learn more abou",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": []
+  },
+  {
+    "id": 26,
+    "question": "Explain the simplex method for linear programming.",
+    "type": "unanswerable",
+    "expected": null,
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 38.843694986s. [links {\n  description: \"Learn more abo",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": []
+  },
+  {
+    "id": 27,
+    "question": "What is the Edmonds-Karp running time analysis?",
+    "type": "unanswerable",
+    "expected": null,
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 38.055648823s. [links {\n  description: \"Learn more abo",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": []
+  },
+  {
+    "id": 28,
+    "question": "Prove that 3-SAT reduces to Independent Set.",
+    "type": "unanswerable",
+    "expected": null,
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 37.333838513s. [links {\n  description: \"Learn more abo",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": []
+  },
+  {
+    "id": 29,
+    "question": "How does the Splay Tree maintain amortized O(log n) operations?",
+    "type": "unanswerable",
+    "expected": null,
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 36.717363746s. [links {\n  description: \"Learn more abo",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": []
+  },
+  {
+    "id": 30,
+    "question": "What is the randomized algorithm for matrix identity testing?",
+    "type": "unanswerable",
+    "expected": null,
+    "answer": "ERROR: Gemini API call failed \u2014 ResourceExhausted: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-3.6-flash\nPlease retry in 35.780820611s. [links {\n  description: \"Learn more abo",
+    "is_refusal": false,
+    "refusal_reason": "",
+    "citations": [],
+    "grounding_score": 0.0,
+    "answer_correct": false,
+    "citation_correct": false,
+    "source_docs": []
+  }
+]

@@ -9,7 +9,9 @@ from __future__ import annotations
 import re
 import uuid
 from dataclasses import dataclass, field
-from typing import Union
+
+from src.ingestion.pdf_parser import PageRecord
+from src.config import CHUNK_SIZE, CHUNK_OVERLAP
 
 # ── Chunk size constants ────────────────────────────────────────────────────
 CHUNK_SIZE = 500     # characters (≈ 125 tokens for most English text)

@@ -1,0 +1,358 @@
+[
+  {
+    "id": 1,
+    "type": "single_doc",
+    "question": "What is the time complexity of Dijkstra's algorithm with a binary heap?",
+    "expected_answer": "O((V + E) log V)",
+    "source_docs": [
+      {
+        "file": "slides_01_overview.pdf",
+        "page": 7
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "type": "single_doc",
+    "question": "What are the three cases of the Master Theorem?",
+    "expected_answer": "Case 1: leaves dominate, Case 2: equal, Case 3: root dominates",
+    "source_docs": [
+      {
+        "file": "slides_01_overview.pdf",
+        "page": 3
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "type": "single_doc",
+    "question": "What is the time complexity of Merge Sort in all cases?",
+    "expected_answer": "O(n log n)",
+    "source_docs": [
+      {
+        "file": "lecture_03_sorting.pdf",
+        "page": 3
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "type": "single_doc",
+    "question": "What data structure does BFS use?",
+    "expected_answer": "Queue",
+    "source_docs": [
+      {
+        "file": "slides_01_overview.pdf",
+        "page": 5
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "type": "single_doc",
+    "question": "What is the worst-case time complexity of Quicksort?",
+    "expected_answer": "O(n\u00b2)",
+    "source_docs": [
+      {
+        "file": "lecture_03_sorting.pdf",
+        "page": 4
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "type": "single_doc",
+    "question": "What is the heap property of a max-heap?",
+    "expected_answer": "parent >= children",
+    "source_docs": [
+      {
+        "file": "lecture_02_trees.pdf",
+        "page": 3
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "type": "single_doc",
+    "question": "What is a Trie used for?",
+    "expected_answer": "Storing strings / autocomplete / prefix search",
+    "source_docs": [
+      {
+        "file": "lecture_02_trees.pdf",
+        "page": 6
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "type": "single_doc",
+    "question": "What does LIFO stand for and which data structure uses it?",
+    "expected_answer": "Last In First Out \u2014 Stack",
+    "source_docs": [
+      {
+        "file": "lecture_01_basics.pdf",
+        "page": 4
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "type": "single_doc",
+    "question": "What is the amortized cost of push in a dynamic array?",
+    "expected_answer": "O(1) amortized",
+    "source_docs": [
+      {
+        "file": "lecture_01_basics.pdf",
+        "page": 2
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "type": "single_doc",
+    "question": "How does Kruskal's algorithm find the MST?",
+    "expected_answer": "Sort edges by weight, add edge if no cycle using Union-Find",
+    "source_docs": [
+      {
+        "file": "slides_02_advanced.pdf",
+        "page": 2
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "type": "multi_doc",
+    "question": "Compare the time complexity of Dijkstra's and Bellman-Ford algorithms.",
+    "expected_answer": "Dijkstra O((V+E)logV), Bellman-Ford O(VE)",
+    "source_docs": [
+      {
+        "file": "slides_01_overview.pdf",
+        "page": 7
+      },
+      {
+        "file": "slides_01_overview.pdf",
+        "page": 8
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "type": "multi_doc",
+    "question": "How do the handwritten notes describe BFS compared to the slides?",
+    "expected_answer": "Both note queue usage and O(V+E) time",
+    "source_docs": [
+      {
+        "file": "handwritten_hard.png",
+        "page": 1
+      },
+      {
+        "file": "slides_01_overview.pdf",
+        "page": 5
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "type": "multi_doc",
+    "question": "How does the recursion tree method relate to the Master Theorem?",
+    "expected_answer": "Recursion tree sums level costs to derive the Master Theorem cases",
+    "source_docs": [
+      {
+        "file": "study_notes.md",
+        "page": 2
+      },
+      {
+        "file": "slides_01_overview.pdf",
+        "page": 3
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "type": "multi_doc",
+    "question": "Compare Merge Sort and Quicksort in terms of stability and space complexity.",
+    "expected_answer": "Merge Sort: stable O(n) space; Quicksort: unstable O(log n) space",
+    "source_docs": [
+      {
+        "file": "lecture_03_sorting.pdf",
+        "page": 3
+      },
+      {
+        "file": "lecture_03_sorting.pdf",
+        "page": 4
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "type": "multi_doc",
+    "question": "What does the study notes say about when greedy algorithms fail, and does this match the slides?",
+    "expected_answer": "Both say greedy fails on 0-1 Knapsack; use DP instead",
+    "source_docs": [
+      {
+        "file": "study_notes.md",
+        "page": 5
+      },
+      {
+        "file": "slides_01_overview.pdf",
+        "page": 12
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "type": "multi_doc",
+    "question": "How is the LCS problem defined in the notes and what recurrence does it use?",
+    "expected_answer": "Longest Common Subsequence; dp[i][j] = dp[i-1][j-1]+1 if match, else max(dp[i-1][j], dp[i][j-1])",
+    "source_docs": [
+      {
+        "file": "study_notes.md",
+        "page": 3
+      },
+      {
+        "file": "slides_01_overview.pdf",
+        "page": 10
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "type": "multi_doc",
+    "question": "What does the handwritten note say about which algorithm to use for negative edge weights?",
+    "expected_answer": "Bellman-Ford for negative edges",
+    "source_docs": [
+      {
+        "file": "handwritten_hard.png",
+        "page": 1
+      },
+      {
+        "file": "slides_01_overview.pdf",
+        "page": 8
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "type": "multi_doc",
+    "question": "Compare BST and Heap for the operation of finding the minimum element.",
+    "expected_answer": "Heap: O(1) find-min; BST: O(log n) (leftmost node)",
+    "source_docs": [
+      {
+        "file": "lecture_02_trees.pdf",
+        "page": 4
+      },
+      {
+        "file": "lecture_02_trees.pdf",
+        "page": 3
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "type": "multi_doc",
+    "question": "How do the sorting notes and lecture agree on Timsort?",
+    "expected_answer": "Both: hybrid insertion+merge sort, stable, O(n log n) worst O(n) best",
+    "source_docs": [
+      {
+        "file": "handwritten_clean.png",
+        "page": 1
+      },
+      {
+        "file": "lecture_03_sorting.pdf",
+        "page": 6
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "type": "multi_doc",
+    "question": "What is the relationship between Max-Flow and Min-Cut according to the slides?",
+    "expected_answer": "Max-Flow Min-Cut Theorem: max flow equals min cut capacity",
+    "source_docs": [
+      {
+        "file": "slides_02_advanced.pdf",
+        "page": 4
+      }
+    ]
+  },
+  {
+    "id": 21,
+    "type": "unanswerable",
+    "question": "Explain the Cook-Levin theorem and its significance.",
+    "expected_answer": null,
+    "source_docs": [],
+    "syllabus_topic": "NP-Completeness proofs (not in corpus)"
+  },
+  {
+    "id": 22,
+    "type": "unanswerable",
+    "question": "What is the Aho-Corasick algorithm?",
+    "expected_answer": null,
+    "source_docs": [],
+    "syllabus_topic": "Advanced string algorithms"
+  },
+  {
+    "id": 23,
+    "type": "unanswerable",
+    "question": "Derive the Strassen matrix multiplication recurrence.",
+    "expected_answer": null,
+    "source_docs": [],
+    "syllabus_topic": "Strassen derivation (mentioned but not derived)"
+  },
+  {
+    "id": 24,
+    "type": "unanswerable",
+    "question": "How does the Floyd-Warshall algorithm work step by step?",
+    "expected_answer": null,
+    "source_docs": [],
+    "syllabus_topic": "Floyd-Warshall (only briefly mentioned in handwritten notes)"
+  },
+  {
+    "id": 25,
+    "type": "unanswerable",
+    "question": "What is the Van Emde Boas tree?",
+    "expected_answer": null,
+    "source_docs": [],
+    "syllabus_topic": "Advanced data structures"
+  },
+  {
+    "id": 26,
+    "type": "unanswerable",
+    "question": "Explain the simplex method for linear programming.",
+    "expected_answer": null,
+    "source_docs": [],
+    "syllabus_topic": "Linear programming"
+  },
+  {
+    "id": 27,
+    "type": "unanswerable",
+    "question": "What is the Edmonds-Karp running time analysis?",
+    "expected_answer": null,
+    "source_docs": [],
+    "syllabus_topic": "Network flow detailed analysis"
+  },
+  {
+    "id": 28,
+    "type": "unanswerable",
+    "question": "Prove that 3-SAT reduces to Independent Set.",
+    "expected_answer": null,
+    "source_docs": [],
+    "syllabus_topic": "NP reductions"
+  },
+  {
+    "id": 29,
+    "type": "unanswerable",
+    "question": "How does the Splay Tree maintain amortized O(log n) operations?",
+    "expected_answer": null,
+    "source_docs": [],
+    "syllabus_topic": "Splay trees"
+  },
+  {
+    "id": 30,
+    "type": "unanswerable",
+    "question": "What is the randomized algorithm for matrix identity testing?",
+    "expected_answer": null,
+    "source_docs": [],
+    "syllabus_topic": "Randomized algorithms"
+  }
+]

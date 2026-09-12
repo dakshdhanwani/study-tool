@@ -40,11 +40,6 @@ def find_chunk_by_citation(
         if (_names_match(citation.source_file, str(meta.get("source_file", ""))) and
                 _pages_match(citation.page_number, meta.get("page_number", ""))):
             return chunk
-    # Fallback: filename only
-    for chunk in chunks:
-        meta = chunk.get("metadata", chunk)
-        if _names_match(citation.source_file, str(meta.get("source_file", ""))):
-            return chunk
     return None
 
 
@@ -61,10 +56,7 @@ def check_citations_grounded(
     results: list[dict] = []
     for citation in citations:
         matched = find_chunk_by_citation(citation, chunks)
-        grounded = False
-        if matched is not None:
-            meta = matched.get("metadata", matched)
-            grounded = _pages_match(citation.page_number, meta.get("page_number", ""))
+        grounded = matched is not None
         results.append({"citation": citation, "grounded": grounded, "matched_chunk": matched})
     return results
 
