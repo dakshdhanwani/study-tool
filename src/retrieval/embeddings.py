@@ -1,0 +1,59 @@
+"""
+Embedding model wrapper using sentence-transformers.
+"""
+from __future__ import annotations
+
+from typing import Optional
+import numpy as np
+from sentence_transformers import SentenceTransformer
+
+EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+
+
+class EmbeddingModel:
+    """Lazy-loading SentenceTransformer wrapper."""
+
+    def __init__(self, model_name: str = EMBEDDING_MODEL) -> None:
+        self._model_name = model_name
+        self._model: Optional[SentenceTransformer] = None
+
+    @property
+    def model(self) -> SentenceTransformer:
+        if self._model is None:
+            self._model = SentenceTransformer(self._model_name)
+        return self._model
+
+    def embed(self, texts: list[str]) -> np.ndarray:
+        """Encode a list of texts, returning an (n, dim) float32 array."""
+        if not texts:
+            return np.empty((0,), dtype=np.float32)
+        return self.model.encode(
+            texts,
+            convert_to_numpy=True,
+            show_progress_bar=False,
+            normalize_embeddings=True,
+        )
+
+    def embed_one(self, text: str) -> np.ndarray:
+        """Encode a single string into a 1-D embedding vector."""
+        return self.embed([text])[0]
+
+    def similarity(self, a: np.ndarray, b: np.ndarray) -> float:
+        """Cosine similarity between two L2-normalised vectors."""
+        a = np.asarray(a, dtype=np.float64).ravel()
+        b = np.asarray(b, dtype=np.float64).ravel()
+        na, nb = np.linalg.norm(a), np.linalg.norm(b)
+        if na == 0 or nb == 0:
+            return 0.0
+        return float(np.dot(a, b) / (na * nb))
+
+
+_embedder: Optional[EmbeddingModel] = None
+
+
+def get_embedder() -> EmbeddingModel:
+    """Return the module-level EmbeddingModel singleton."""
+    global _embedder
+    if _embedder is None:
+        _embedder = EmbeddingModel()
+    return _embedder
