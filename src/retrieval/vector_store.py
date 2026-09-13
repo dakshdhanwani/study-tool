@@ -1,5 +1,8 @@
 """
-ChromaDB-backed vector store for semantic retrieval.
+ChromaDB-backed vector store for semantic retrieval (legacy local version).
+
+NOTE: The main app now uses SupabaseVectorStore from src/storage/vector_store_supa.py.
+This module is kept for backward-compatibility and local dev/testing.
 """
 from __future__ import annotations
 
@@ -7,34 +10,36 @@ from pathlib import Path
 from typing import Any, Optional
 
 import numpy as np
-import chromadb
-import streamlit as st
 
-from src.config import CHROMA_DIR, CHROMA_COLLECTION
 from src.ingestion.chunker import Chunk
 from src.retrieval.embeddings import get_embedder
+
+# Local fallbacks (used only if VectorStore is instantiated directly)
+_LOCAL_CHROMA_DIR        = Path(__file__).parent.parent.parent / "data" / "chroma"
+_LOCAL_CHROMA_COLLECTION = "study_chunks"
 
 _BATCH_SIZE = 64
 
 
 class VectorStore:
-    """Persistent ChromaDB vector store."""
+    """Persistent ChromaDB vector store (legacy local)."""
 
     def __init__(
         self,
-        persist_dir: Path = CHROMA_DIR,
-        collection_name: str = CHROMA_COLLECTION,
+        persist_dir: Path = _LOCAL_CHROMA_DIR,
+        collection_name: str = _LOCAL_CHROMA_COLLECTION,
     ) -> None:
         self._persist_dir = Path(persist_dir)
         self._collection_name = collection_name
-        self._client = chromadb.PersistentClient(path=str(self._persist_dir))
-        
+        import chromadb as _chromadb
+        self._client = _chromadb.PersistentClient(path=str(self._persist_dir))
+
         # Prevent Chroma from loading default ONNX embedder
         from chromadb.api.types import EmbeddingFunction
         class DummyEF(EmbeddingFunction):
             def __call__(self, input: list[str]) -> list[list[float]]: return []
             def name(self) -> str: return "default"
-                
+
         self._collection = self._client.get_or_create_collection(
             name=self._collection_name,
             metadata={"hnsw:space": "cosine"},
@@ -132,7 +137,9 @@ class VectorStore:
 _store: Optional[VectorStore] = None
 
 
-@st.cache_resource(show_spinner=False)
 def get_vector_store() -> VectorStore:
-    """Return a singleton VectorStore, cached across rerenders by Streamlit."""
-    return VectorStore()
+    """Return a module-level VectorStore singleton (legacy local ChromaDB version)."""
+    global _store
+    if _store is None:
+        _store = VectorStore()
+    return _store

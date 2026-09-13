@@ -572,9 +572,9 @@ def _ingest_files(paths: list[Path], category: str) -> None:
     from src.retrieval.vector_store import VectorStore
     from src.retrieval.bm25_index import BM25Index
     from src.ingestion.chunker import chunk_all
-    from src.config import SQLITE_PATH, PAGE_IMAGES_DIR
+    from src.config import PAGE_IMAGES_DIR
 
-    registry = DocumentRegistry(SQLITE_PATH)
+    registry = DocumentRegistry()   # uses local SQLite default path
     vs       = VectorStore()
     bm25     = BM25Index()
     if BM25_PICKLE_PATH.exists():

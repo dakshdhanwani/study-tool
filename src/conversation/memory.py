@@ -10,21 +10,22 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
-from src.config import SQLITE_PATH, MAX_HISTORY_TURNS
+from src.config import MAX_HISTORY_TURNS
+
+# Legacy local path (only used if this class is instantiated directly)
+_LOCAL_SQLITE_PATH = Path(__file__).parent.parent.parent / "data" / "study_workspace.db"
 
 
 class ConversationMemory:
-    """Persistent conversation store backed by SQLite.
+    """Persistent conversation store backed by SQLite (legacy local version).
 
-    Tables
-    ------
-    conversations : individual turns (user/assistant) with citation JSON.
-    sessions      : session metadata (name, topics, docs).
+    NOTE: The main app now uses SupabaseConversationMemory from src/storage/memory_supa.py.
+    This class is kept for backward-compatibility and local dev/testing.
     """
 
     def __init__(
         self,
-        db_path: Path = SQLITE_PATH,
+        db_path: Path = _LOCAL_SQLITE_PATH,
         session_id: Optional[str] = None,
     ) -> None:
         db_path = Path(db_path)

@@ -29,13 +29,17 @@ from src.config import PAGE_IMAGES_DIR
 
 BM25_PICKLE_PATH: Path = Path(__file__).parent.parent.parent / "data" / "bm25_index.pkl"
 
+# Local fallbacks (used only for CLI / legacy local ingestion — NOT the cloud path)
+_LOCAL_SQLITE_PATH = Path(__file__).parent.parent.parent / "data" / "study_workspace.db"
+_LOCAL_CORPUS_DIR  = Path(__file__).parent.parent.parent / "corpus"
 
-# ── Document Registry ─────────────────────────────────────────────────────────
+
+# ── Document Registry (legacy local — kept for CLI use) ───────────────────────
 
 class DocumentRegistry:
-    """SQLite-backed registry tracking which files have been ingested."""
+    """SQLite-backed registry tracking which files have been ingested (local/legacy)."""
 
-    def __init__(self, db_path: Path = SQLITE_PATH) -> None:
+    def __init__(self, db_path: Path = _LOCAL_SQLITE_PATH) -> None:
         db_path = Path(db_path)
         db_path.parent.mkdir(parents=True, exist_ok=True)
         self._conn = sqlite3.connect(str(db_path), check_same_thread=False)
@@ -92,7 +96,7 @@ class DocumentRegistry:
 
 # ── Ingestion pipeline ────────────────────────────────────────────────────────
 
-def ingest_corpus(corpus_dir: Path = CORPUS_DIR, force_reingest: bool = False) -> dict:
+def ingest_corpus(corpus_dir: Path = _LOCAL_CORPUS_DIR, force_reingest: bool = False) -> dict:
     """Ingest all documents in *corpus_dir* into vector + BM25 + document registry.
 
     Parameters
