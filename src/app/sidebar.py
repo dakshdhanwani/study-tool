@@ -12,23 +12,22 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 
-# ── Cached helpers (run once every 30 s, not on every rerender) ───────────────
+# ── Cached helpers (scoped per user_id, cached 30 s) ──────────────────────────
 
 @st.cache_data(ttl=30, show_spinner=False)
-def _chunk_count() -> int:
+def _chunk_count(user_id: str) -> int:
     try:
-        from src.retrieval.vector_store import get_vector_store
-        return get_vector_store().collection_size()
+        from src.storage.vector_store_supa import SupabaseVectorStore
+        return SupabaseVectorStore(user_id).collection_size()
     except Exception:
         return 0
 
 
 @st.cache_data(ttl=30, show_spinner=False)
-def _registered_docs() -> list[dict]:
+def _registered_docs(user_id: str) -> list[dict]:
     try:
-        from src.ingestion.indexer import DocumentRegistry
-        from src.config import SQLITE_PATH
-        return DocumentRegistry(SQLITE_PATH).list_documents()
+        from src.storage.registry_supa import SupabaseDocumentRegistry
+        return SupabaseDocumentRegistry(user_id).list_documents()
     except Exception:
         return []
 
@@ -113,7 +112,8 @@ def render_sidebar() -> None:
         st.divider()
 
         # ── Corpus status ─────────────────────────────────────────────────────
-        n = _chunk_count()
+        user_id = st.session_state.get("user_id", "")
+        n = _chunk_count(user_id)
         if n > 0:
             st.markdown(
                 f"🟢 <small><b>{n:,} chunks</b> indexed and ready</small>",
@@ -151,7 +151,7 @@ def render_sidebar() -> None:
         st.divider()
 
         # ── Materials list ────────────────────────────────────────────────────
-        docs = _registered_docs()
+        docs = _registered_docs(user_id)
         if docs:
             st.markdown(
                 "<div style='font-size:.68rem;font-weight:600;letter-spacing:.08em;"

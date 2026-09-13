@@ -1,5 +1,5 @@
 """
-Hybrid search combining semantic (ChromaDB) and sparse (BM25) retrieval
+Hybrid search combining semantic (pgvector) and sparse (BM25) retrieval
 via Reciprocal Rank Fusion (RRF).
 """
 from __future__ import annotations
@@ -8,7 +8,6 @@ from collections import defaultdict
 from typing import Any
 
 from src.config import RETRIEVAL_TOP_K
-from src.retrieval.vector_store import VectorStore
 from src.retrieval.bm25_index import BM25Index
 
 
@@ -36,7 +35,7 @@ def reciprocal_rank_fusion(
 
 def hybrid_search(
     query: str,
-    vector_store: VectorStore,
+    vector_store: Any,
     bm25_index: BM25Index,
     top_k: int = RETRIEVAL_TOP_K,
 ) -> list[dict[str, Any]]:

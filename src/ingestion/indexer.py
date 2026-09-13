@@ -10,6 +10,7 @@ from __future__ import annotations
 import pickle
 import sqlite3
 import sys
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
@@ -24,11 +25,9 @@ from src.ingestion.pdf_parser import extract_pdf_pages, extract_slide_pages
 from src.ingestion.text_loader import load_markdown_file, load_text_file
 from src.ingestion.ocr_pipeline import process_handwritten_image
 from src.ingestion.chunker import chunk_all
-from src.retrieval.vector_store import VectorStore
-from src.retrieval.bm25_index import BM25Index
-from src.config import SQLITE_PATH, DATA_DIR, CORPUS_DIR, PAGE_IMAGES_DIR
+from src.config import PAGE_IMAGES_DIR
 
-BM25_PICKLE_PATH: Path = DATA_DIR / "bm25_index.pkl"
+BM25_PICKLE_PATH: Path = Path(__file__).parent.parent.parent / "data" / "bm25_index.pkl"
 
 
 # ── Document Registry ─────────────────────────────────────────────────────────
@@ -254,6 +253,120 @@ def load_index() -> tuple[VectorStore, BM25Index]:
                   file=sys.stderr)
 
     return vector_store, bm25_index
+
+
+# ── Cloud ingestion (Supabase) ────────────────────────────────────────────────
+
+def ingest_single_file_cloud(
+    user_id: str,
+    storage_path: str,
+    category: str,
+    filename: str,
+) -> dict:
+    """Download a file from Supabase Storage and ingest it into pgvector + registry.
+
+    Parameters
+    ----------
+    user_id:      The visitor's UUID.
+    storage_path: Supabase Storage path, e.g. '{user_id}/lectures/notes.pdf'
+    category:     'lectures' | 'slides' | 'notes' | 'handwritten'
+    filename:     Original filename, e.g. 'notes.pdf'
+
+    Returns
+    -------
+    dict
+        {'source_file', 'page_count', 'chunk_count', 'format', 'error'}
+    """
+    from src.storage.file_store import download_file
+    from src.storage.vector_store_supa import SupabaseVectorStore
+    from src.storage.registry_supa import SupabaseDocumentRegistry
+
+    vs  = SupabaseVectorStore(user_id)
+    reg = SupabaseDocumentRegistry(user_id)
+
+    # Download file bytes from Supabase Storage into a temp file
+    try:
+        file_bytes = download_file(storage_path)
+    except Exception as exc:
+        return {"source_file": filename, "error": f"Download failed: {exc}",
+                "page_count": 0, "chunk_count": 0, "format": "unknown"}
+
+    suffix = Path(filename).suffix.lower()
+
+    with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
+        tmp.write(file_bytes)
+        tmp_path = Path(tmp.name)
+
+    try:
+        pages = []
+        fmt   = "unknown"
+
+        if category == "lectures" and suffix == ".pdf":
+            pages = extract_pdf_pages(tmp_path, output_image_dir=PAGE_IMAGES_DIR)
+            fmt = "pdf-lecture"
+        elif category == "slides" and suffix == ".pdf":
+            pages = extract_slide_pages(tmp_path, output_image_dir=PAGE_IMAGES_DIR)
+            fmt = "pdf-slide"
+        elif category == "notes":
+            if suffix == ".md":
+                pages = load_markdown_file(tmp_path)
+                fmt = "markdown"
+            else:
+                pages = load_text_file(tmp_path)
+                fmt = "text"
+        elif category == "handwritten":
+            pages = process_handwritten_image(tmp_path, output_image_dir=PAGE_IMAGES_DIR)
+            fmt = "handwritten"
+
+        if not pages:
+            return {"source_file": filename, "error": "No pages extracted",
+                    "page_count": 0, "chunk_count": 0, "format": fmt}
+
+        chunks = chunk_all(pages, source=filename)
+        if not chunks:
+            return {"source_file": filename, "error": "No chunks produced",
+                    "page_count": len(pages), "chunk_count": 0, "format": fmt}
+
+        # Store vectors in Supabase pgvector
+        vs.add_chunks(chunks)
+
+        # Register document in Supabase
+        reg.register(
+            source_file=filename,
+            format=fmt,
+            page_count=len(pages),
+            chunk_count=len(chunks),
+            storage_path=storage_path,
+        )
+
+        return {
+            "source_file": filename,
+            "page_count":  len(pages),
+            "chunk_count": len(chunks),
+            "format":      fmt,
+            "error":       None,
+        }
+
+    except Exception as exc:
+        return {"source_file": filename, "error": str(exc),
+                "page_count": 0, "chunk_count": 0, "format": "unknown"}
+    finally:
+        tmp_path.unlink(missing_ok=True)
+
+
+def rebuild_bm25_for_user(user_id: str):
+    """Load all chunk texts for a user from Supabase and return a built BM25Index.
+
+    Called once per session and cached in st.session_state['bm25'].
+    """
+    from src.retrieval.bm25_index import BM25Index
+    from src.storage.vector_store_supa import SupabaseVectorStore
+
+    vs = SupabaseVectorStore(user_id)
+    chunks = vs.get_all_chunks()
+    bm25 = BM25Index()
+    bm25.build(chunks)
+    return bm25
 
 
 if __name__ == "__main__":

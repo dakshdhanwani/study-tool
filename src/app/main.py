@@ -1,11 +1,12 @@
 """
-Course Companion — main entry point (clean rebuild).
+Course Companion — main entry point.
 
 Run with:
     streamlit run src/app/main.py
 """
 import sys
 import os
+import uuid
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
@@ -102,16 +103,27 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── Session state bootstrap ────────────────────────────────────────────────────
+
+# Each browser session gets a unique user_id — scopes all Supabase data
+if "user_id" not in st.session_state:
+    st.session_state["user_id"] = str(uuid.uuid4())
+
+user_id = st.session_state["user_id"]
+
+# Conversation memory backed by Supabase PostgreSQL
 if "memory" not in st.session_state:
-    from src.conversation.memory import ConversationMemory
-    st.session_state.memory = ConversationMemory()
+    from src.storage.memory_supa import SupabaseConversationMemory
+    st.session_state.memory = SupabaseConversationMemory(user_id)
+
 if "session_mgr" not in st.session_state:
     from src.conversation.session import SessionManager
     st.session_state.session_mgr = SessionManager(st.session_state.memory)
+
 if "result"  not in st.session_state: st.session_state.result  = None
 if "chunks"  not in st.session_state: st.session_state.chunks  = []
 if "query"   not in st.session_state: st.session_state.query   = ""
 if "history" not in st.session_state: st.session_state.history = []
+if "bm25"    not in st.session_state: st.session_state.bm25    = None  # rebuilt lazily
 
 # ── Render app ─────────────────────────────────────────────────────────────────
 from src.app.sidebar  import render_sidebar

@@ -79,12 +79,22 @@ def _comparison_rows(answer: str, a: str, b: str) -> list[tuple[str, str, str]]:
 def _run_query(q: str) -> None:
     """Run full RAG pipeline and store in session state."""
     try:
-        from src.retrieval.vector_store import get_vector_store
-        if get_vector_store().collection_size() == 0:
+        user_id = st.session_state.get("user_id", "")
+
+        # ── Check if user has any indexed documents ───────────────────────────
+        from src.storage.vector_store_supa import SupabaseVectorStore
+        vs = SupabaseVectorStore(user_id)
+        if vs.collection_size() == 0:
             st.warning("No documents indexed yet. Go to **📁 My Materials** and upload files first.")
             return
 
-        from src.ingestion.indexer import load_index
+        # ── Lazy BM25 build from Supabase chunk texts ─────────────────────────
+        if st.session_state.get("bm25") is None:
+            from src.ingestion.indexer import rebuild_bm25_for_user
+            with st.spinner("Building keyword index…"):
+                st.session_state.bm25 = rebuild_bm25_for_user(user_id)
+        bm25 = st.session_state.bm25
+
         from src.retrieval.hybrid_search import hybrid_search
         from src.retrieval.reranker import get_reranker
         from src.generation.generator import generate_answer, configure_gemini
@@ -97,7 +107,6 @@ def _run_query(q: str) -> None:
         expanded = expand_query(q, history, mgr.state)
 
         configure_gemini()
-        vs, bm25 = load_index()
         candidates = hybrid_search(expanded, vs, bm25, top_k=14)
         chunks     = get_reranker().rerank(expanded, candidates, top_k=6)
         result     = generate_answer(expanded, chunks, conversation_history=history)
@@ -362,9 +371,11 @@ def _materials() -> None:
     st.title("📁 My Materials")
     st.markdown(
         "Upload your lecture PDFs, slide decks, markdown notes, "
-        "and **photos of handwritten notes**. Everything is indexed locally — "
-        "files are **never committed to GitHub**."
+        "and **photos of handwritten notes**. Files are stored securely in the cloud — "
+        "**never committed to GitHub**, and only visible to you."
     )
+
+    user_id = st.session_state.get("user_id", "")
 
     # ── Upload section ────────────────────────────────────────────────────────
     with st.container(border=True):
@@ -405,45 +416,59 @@ def _materials() -> None:
             )
 
         if uploaded:
-            # ── Save to data/uploads/{category}/ — gitignored, never in repo ──
-            from src.config import UPLOADS_DIR
-            dest_dir = UPLOADS_DIR / category
-            dest_dir.mkdir(parents=True, exist_ok=True)
-
             st.markdown(f"**{len(uploaded)} file(s) ready to upload:**")
-            saved_paths = []
+            upload_results = []
+
             for f in uploaded:
-                dest = dest_dir / f.name
-                dest.write_bytes(f.getvalue())
-                saved_paths.append(dest)
-                st.markdown(
-                    f'<div class="file-row">'
-                    f'<span class="fname">{f.name}</span>'
-                    f'<span class="fmeta">{f.size/1024:.1f} KB · {category}</span>'
-                    f'<span class="badge-ok">Saved ✓</span>'
-                    f'</div>',
-                    unsafe_allow_html=True,
-                )
+                try:
+                    from src.storage.file_store import upload_file
+                    storage_path = upload_file(
+                        user_id=user_id,
+                        category=category,
+                        filename=f.name,
+                        data=f.getvalue(),
+                    )
+                    upload_results.append((f, storage_path, True))
+                    st.markdown(
+                        f'<div class="file-row">'
+                        f'<span class="fname">{f.name}</span>'
+                        f'<span class="fmeta">{f.size/1024:.1f} KB · {category}</span>'
+                        f'<span class="badge-ok">Uploaded ✓</span>'
+                        f'</div>',
+                        unsafe_allow_html=True,
+                    )
+                except Exception as exc:
+                    upload_results.append((f, "", False))
+                    st.markdown(
+                        f'<div class="file-row">'
+                        f'<span class="fname">{f.name}</span>'
+                        f'<span class="fmeta">Upload failed: {exc}</span>'
+                        f'<span class="badge-err">Error</span>'
+                        f'</div>',
+                        unsafe_allow_html=True,
+                    )
+
+            successful = [(f, sp) for f, sp, ok in upload_results if ok]
 
             st.markdown("")
-            if st.button("🚀 Index uploaded files", type="primary", use_container_width=True):
-                _ingest_files(saved_paths, category)
-                # Invalidate sidebar caches so chunk count / doc list refresh
+            if successful and st.button("🚀 Index uploaded files", type="primary", use_container_width=True):
+                _ingest_files_cloud(user_id, successful, category)
                 from src.app.sidebar import _chunk_count, _registered_docs
                 _chunk_count.clear()
                 _registered_docs.clear()
+                # Invalidate BM25 so it rebuilds on next query
+                st.session_state.bm25 = None
 
     st.markdown("")
 
     # ── Already indexed ───────────────────────────────────────────────────────
     with st.container(border=True):
         st.subheader("Indexed documents")
-        st.caption("Click 🗑️ Delete to remove a document from the index.")
+        st.caption("Click 🗑️ to remove a document from the index and storage.")
 
         try:
-            from src.ingestion.indexer import DocumentRegistry
-            from src.config import SQLITE_PATH
-            docs = DocumentRegistry(SQLITE_PATH).list_documents()
+            from src.storage.registry_supa import SupabaseDocumentRegistry
+            docs = SupabaseDocumentRegistry(user_id).list_documents()
         except Exception:
             docs = []
 
@@ -460,45 +485,85 @@ def _materials() -> None:
                 c1.markdown(f"{icon} **{doc['source_file']}**")
                 c2.caption(f"{doc.get('page_count','?')} pages")
                 c3.caption(f"{doc.get('chunk_count','?')} chunks")
-                c4.caption(doc.get('ingested_at','')[:10])
+                c4.caption(str(doc.get('ingested_at',''))[:10])
                 if c5.button("🗑️", key=f"del_{doc['source_file']}",
                              help=f"Remove {doc['source_file']} from the index"):
-                    _delete_document(doc['source_file'])
+                    _delete_document(user_id, doc['source_file'], doc.get('storage_path',''))
                     from src.app.sidebar import _chunk_count, _registered_docs
                     _chunk_count.clear()
                     _registered_docs.clear()
+                    st.session_state.bm25 = None
                     st.rerun()
 
 
-def _delete_document(source_file: str) -> None:
-    """Remove a document fully from ChromaDB, BM25 index, and SQLite registry."""
-    import sqlite3
-    from src.config import SQLITE_PATH
-    from src.retrieval.vector_store import get_vector_store
-
-    # 1. Remove chunks from ChromaDB that belong to this source file
+def _delete_document(user_id: str, source_file: str, storage_path: str = "") -> None:
+    """Remove a document from Supabase pgvector, registry, and Storage."""
+    # 1. Remove vectors
     try:
-        vs = get_vector_store()
-        all_chunks = vs.get_all_chunks()
-        ids_to_delete = [
-            c["chunk_id"] for c in all_chunks
-            if c.get("metadata", {}).get("source_file", "") == source_file
-        ]
-        if ids_to_delete:
-            vs._collection.delete(ids=ids_to_delete)
+        from src.storage.vector_store_supa import SupabaseVectorStore
+        SupabaseVectorStore(user_id).delete_chunks_for_document(source_file)
     except Exception as exc:
-        st.warning(f"Could not remove from vector store: {exc}")
+        st.warning(f"Could not remove vectors: {exc}")
 
-    # 2. Remove from SQLite registry
+    # 2. Remove from document registry
     try:
-        conn = sqlite3.connect(str(SQLITE_PATH))
-        conn.execute("DELETE FROM documents WHERE source_file = ?", (source_file,))
-        conn.commit()
-        conn.close()
+        from src.storage.registry_supa import SupabaseDocumentRegistry
+        SupabaseDocumentRegistry(user_id).delete_document(source_file)
     except Exception as exc:
-        st.warning(f"Could not remove from registry: {exc}")
+        st.warning(f"Could not remove registry entry: {exc}")
 
-    st.success(f"✅ '{source_file}' removed from the index.")
+    # 3. Remove file from Supabase Storage
+    if storage_path:
+        try:
+            from src.storage.file_store import delete_file
+            delete_file(storage_path)
+        except Exception:
+            pass   # non-fatal
+
+    st.success(f"✅ '{source_file}' removed.")
+
+
+def _ingest_files_cloud(user_id: str, files: list, category: str) -> None:
+    """Upload-then-ingest: calls ingest_single_file_cloud for each file.
+
+    Parameters
+    ----------
+    user_id:  The visitor's UUID.
+    files:    List of (UploadedFile, storage_path) tuples.
+    category: 'lectures' | 'slides' | 'notes' | 'handwritten'
+    """
+    from src.ingestion.indexer import ingest_single_file_cloud
+
+    progress = st.progress(0)
+    results  = []
+
+    for i, (f, storage_path) in enumerate(files):
+        progress.progress((i + 1) / len(files), text=f"Processing {f.name}…")
+        result = ingest_single_file_cloud(
+            user_id=user_id,
+            storage_path=storage_path,
+            category=category,
+            filename=f.name,
+        )
+        results.append(result)
+
+    progress.empty()
+
+    for r in results:
+        ok = r.get("error") is None
+        badge = "badge-ok" if ok else "badge-err"
+        label = f"{r.get('page_count','?')} pages · {r.get('chunk_count','?')} chunks" if ok else f"Error: {r.get('error','')}"
+        st.markdown(
+            f'<div class="file-row">'
+            f'<span class="fname">{r["source_file"]}</span>'
+            f'<span class="fmeta">{label}</span>'
+            f'<span class="{badge}">{"Indexed ✓" if ok else "Failed"}</span>'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
+
+    if any(r.get("error") is None for r in results):
+        st.success("✅ Indexing complete! Go to **💬 Ask** to start querying your materials.")
 
 
 def _ingest_files(paths: list[Path], category: str) -> None:
