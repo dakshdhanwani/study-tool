@@ -1,33 +1,7 @@
-# Secrets & environment
 .env
-
-# Python cache
 __pycache__/
 *.py[cod]
-*.pyo
-.pytest_cache/
-
-# ── Data & uploads (NEVER commit these) ──────────────────────────────────────
-data/
-
-# ── Corpus documents (user-uploaded files — NEVER commit) ────────────────────
-corpus/lectures/
-corpus/slides/
-corpus/notes/
-corpus/handwritten/
-corpus/**/*.pdf
-corpus/**/*.png
-corpus/**/*.jpg
-corpus/**/*.jpeg
-corpus/**/*.md
-corpus/**/*.txt
-# But keep the empty-folder placeholder files
-!corpus/**/.gitkeep
-!data/.gitkeep
-
-# Evaluation results (generated)
-evaluation/results/
-evaluation/questions.json
-
-# Streamlit local secrets
-.streamlit/secrets.toml
+data/**/*.db
+data/**/*.db-shm
+data/**/*.db-wal
+data/**/*.sqlite3
