@@ -266,8 +266,9 @@ def ingest_single_file_cloud(
     storage_path: str,
     category: str,
     filename: str,
+    file_bytes: Optional[bytes] = None,
 ) -> dict:
-    """Download a file from Supabase Storage and ingest it into pgvector + registry.
+    """Process a file and ingest it into pgvector + Supabase registry.
 
     Parameters
     ----------
@@ -275,25 +276,29 @@ def ingest_single_file_cloud(
     storage_path: Supabase Storage path, e.g. '{user_id}/lectures/notes.pdf'
     category:     'lectures' | 'slides' | 'notes' | 'handwritten'
     filename:     Original filename, e.g. 'notes.pdf'
+    file_bytes:   Optional raw file bytes. If provided, skips downloading from
+                  Supabase Storage (avoids an extra network round-trip when the
+                  caller already has the bytes in memory, e.g. from Streamlit uploader).
 
     Returns
     -------
     dict
         {'source_file', 'page_count', 'chunk_count', 'format', 'error'}
     """
-    from src.storage.file_store import download_file
     from src.storage.vector_store_supa import SupabaseVectorStore
     from src.storage.registry_supa import SupabaseDocumentRegistry
 
     vs  = SupabaseVectorStore(user_id)
     reg = SupabaseDocumentRegistry(user_id)
 
-    # Download file bytes from Supabase Storage into a temp file
-    try:
-        file_bytes = download_file(storage_path)
-    except Exception as exc:
-        return {"source_file": filename, "error": f"Download failed: {exc}",
-                "page_count": 0, "chunk_count": 0, "format": "unknown"}
+    # Use bytes passed in, or fall back to downloading from Supabase Storage
+    if file_bytes is None:
+        try:
+            from src.storage.file_store import download_file
+            file_bytes = download_file(storage_path)
+        except Exception as exc:
+            return {"source_file": filename, "error": f"Download failed: {exc}",
+                    "page_count": 0, "chunk_count": 0, "format": "unknown"}
 
     suffix = Path(filename).suffix.lower()
 

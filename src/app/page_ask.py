@@ -524,35 +524,52 @@ def _delete_document(user_id: str, source_file: str, storage_path: str = "") -> 
 
 
 def _ingest_files_cloud(user_id: str, files: list, category: str) -> None:
-    """Upload-then-ingest: calls ingest_single_file_cloud for each file.
+    """Ingest already-uploaded files using the bytes we already have in memory.
 
     Parameters
     ----------
     user_id:  The visitor's UUID.
-    files:    List of (UploadedFile, storage_path) tuples.
+    files:    List of (UploadedFile, storage_path) tuples from the Streamlit uploader.
     category: 'lectures' | 'slides' | 'notes' | 'handwritten'
     """
     from src.ingestion.indexer import ingest_single_file_cloud
 
-    progress = st.progress(0)
-    results  = []
+    status  = st.status("Indexing files…", expanded=True)
+    results = []
 
-    for i, (f, storage_path) in enumerate(files):
-        progress.progress((i + 1) / len(files), text=f"Processing {f.name}…")
-        result = ingest_single_file_cloud(
-            user_id=user_id,
-            storage_path=storage_path,
-            category=category,
-            filename=f.name,
-        )
-        results.append(result)
+    with status:
+        for i, (f, storage_path) in enumerate(files):
+            st.write(f"📄 **{f.name}** — parsing…")
+            result = ingest_single_file_cloud(
+                user_id=user_id,
+                storage_path=storage_path,
+                category=category,
+                filename=f.name,
+                file_bytes=f.getvalue(),   # pass bytes directly — skip re-download
+            )
+            results.append(result)
 
-    progress.empty()
+            if result.get("error") is None:
+                st.write(
+                    f"  ✅ {result['page_count']} pages · "
+                    f"{result['chunk_count']} chunks indexed"
+                )
+            else:
+                st.write(f"  ❌ Error: {result['error']}")
 
+        if any(r.get("error") is None for r in results):
+            status.update(label="✅ Indexing complete!", state="complete")
+        else:
+            status.update(label="❌ Indexing failed — see errors above", state="error")
+
+    # Summary rows below the status box
     for r in results:
-        ok = r.get("error") is None
+        ok    = r.get("error") is None
         badge = "badge-ok" if ok else "badge-err"
-        label = f"{r.get('page_count','?')} pages · {r.get('chunk_count','?')} chunks" if ok else f"Error: {r.get('error','')}"
+        label = (
+            f"{r.get('page_count','?')} pages · {r.get('chunk_count','?')} chunks"
+            if ok else f"Error: {r.get('error','')}"
+        )
         st.markdown(
             f'<div class="file-row">'
             f'<span class="fname">{r["source_file"]}</span>'
@@ -563,7 +580,7 @@ def _ingest_files_cloud(user_id: str, files: list, category: str) -> None:
         )
 
     if any(r.get("error") is None for r in results):
-        st.success("✅ Indexing complete! Go to **💬 Ask** to start querying your materials.")
+        st.success("Go to **💬 Ask** to start querying your materials.")
 
 
 def _ingest_files(paths: list[Path], category: str) -> None:

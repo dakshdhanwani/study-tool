@@ -48,12 +48,14 @@ class EmbeddingModel:
         return float(np.dot(a, b) / (na * nb))
 
 
-_embedder: Optional[EmbeddingModel] = None
+import streamlit as st
 
 
+@st.cache_resource(show_spinner=False)
 def get_embedder() -> EmbeddingModel:
-    """Return the module-level EmbeddingModel singleton."""
-    global _embedder
-    if _embedder is None:
-        _embedder = EmbeddingModel()
-    return _embedder
+    """Return the embedding model — cached for the Streamlit server lifetime.
+
+    Uses @st.cache_resource so the 90 MB sentence-transformer model is loaded
+    exactly ONCE when the server starts, and reused for all subsequent calls.
+    """
+    return EmbeddingModel()
