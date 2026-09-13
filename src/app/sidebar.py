@@ -1,5 +1,5 @@
 """
-Sidebar: branding, corpus status, materials list, upload shortcut, recent threads.
+Sidebar: branding, API key management, corpus status, materials list, recent threads.
 """
 from __future__ import annotations
 
@@ -12,6 +12,9 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 
+# ── Cached helpers (run once every 30 s, not on every rerender) ───────────────
+
+@st.cache_data(ttl=30, show_spinner=False)
 def _chunk_count() -> int:
     try:
         from src.retrieval.vector_store import get_vector_store
@@ -20,6 +23,7 @@ def _chunk_count() -> int:
         return 0
 
 
+@st.cache_data(ttl=30, show_spinner=False)
 def _registered_docs() -> list[dict]:
     try:
         from src.ingestion.indexer import DocumentRegistry
@@ -28,6 +32,34 @@ def _registered_docs() -> list[dict]:
     except Exception:
         return []
 
+
+# ── API key helpers ────────────────────────────────────────────────────────────
+
+def _active_key() -> str:
+    """Return the currently active API key (session → env)."""
+    return (
+        st.session_state.get("gemini_api_key", "")
+        or os.environ.get("GEMINI_API_KEY", "")
+    )
+
+
+def _save_key_to_secrets(key: str) -> None:
+    """Persist key to .streamlit/secrets.toml so it survives app restarts."""
+    secrets_path = PROJECT_ROOT / ".streamlit" / "secrets.toml"
+    secrets_path.parent.mkdir(parents=True, exist_ok=True)
+    content = f'GEMINI_API_KEY = "{key}"\n'
+    secrets_path.write_text(content, encoding="utf-8")
+
+
+def _apply_key(key: str) -> None:
+    """Store key in session state, OS environment, and local secrets file."""
+    key = key.strip()
+    st.session_state["gemini_api_key"] = key
+    os.environ["GEMINI_API_KEY"] = key
+    _save_key_to_secrets(key)
+
+
+# ── Main sidebar renderer ──────────────────────────────────────────────────────
 
 def render_sidebar() -> None:
     with st.sidebar:
@@ -42,17 +74,41 @@ def render_sidebar() -> None:
             unsafe_allow_html=True,
         )
 
-        # ── API key status ────────────────────────────────────────────────────
-        key = os.environ.get("GEMINI_API_KEY", "")
+        # ── API key management ────────────────────────────────────────────────
+        key = _active_key()
         if key:
-            st.markdown("🟢 <small>Gemini API key loaded</small>", unsafe_allow_html=True)
+            masked = key[:6] + "…" + key[-4:] if len(key) > 12 else "••••••••"
+            st.markdown(
+                f"🟢 <small><b>Gemini key</b> · <code>{masked}</code></small>",
+                unsafe_allow_html=True,
+            )
+            with st.expander("🔑 Change API key"):
+                new_k = st.text_input("New API key", type="password", key="sidebar_change_key",
+                                      placeholder="AIza…")
+                if st.button("Update key", key="update_key_btn"):
+                    if new_k.strip():
+                        _apply_key(new_k)
+                        st.success("Key updated and saved!")
+                        st.rerun()
+                    else:
+                        st.error("Please enter a key.")
         else:
-            with st.expander("🔑 Set Gemini API key"):
-                k = st.text_input("API key", type="password", key="sidebar_key")
-                if st.button("Save", key="save_key_btn"):
-                    os.environ["GEMINI_API_KEY"] = k
-                    st.success("Saved!")
-                    st.rerun()
+            st.warning("⚠️ No API key set")
+            with st.expander("🔑 Enter Gemini API key", expanded=True):
+                st.markdown(
+                    "<small>Get a free key at "
+                    "[aistudio.google.com](https://aistudio.google.com/app/apikey)</small>",
+                    unsafe_allow_html=True,
+                )
+                new_k = st.text_input("API key", type="password", key="sidebar_new_key",
+                                      placeholder="AIza…")
+                if st.button("Save key", key="save_key_btn", type="primary"):
+                    if new_k.strip():
+                        _apply_key(new_k)
+                        st.success("Key saved!")
+                        st.rerun()
+                    else:
+                        st.error("Please enter a key first.")
 
         st.divider()
 
@@ -65,7 +121,7 @@ def render_sidebar() -> None:
             )
         else:
             st.markdown(
-                "⚪ <small>No corpus indexed — upload files below</small>",
+                "⚪ <small>No corpus indexed — go to <b>My Materials</b> to upload</small>",
                 unsafe_allow_html=True,
             )
 
@@ -77,7 +133,6 @@ def render_sidebar() -> None:
             "📁 My Materials": "materials",
             "🔖 Saved":        "saved",
             "📋 Revision":     "revision",
-            "📊 Evaluation":   "evaluation",
         }
         if "page" not in st.session_state:
             st.session_state.page = "ask"
@@ -152,3 +207,4 @@ def render_sidebar() -> None:
             "🌙 Good luck — you've got this.</div>",
             unsafe_allow_html=True,
         )
+

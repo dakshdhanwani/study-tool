@@ -21,8 +21,6 @@ def render_ask_page() -> None:
         _saved()
     elif page == "revision":
         _revision()
-    elif page == "evaluation":
-        _evaluation()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -363,9 +361,9 @@ def _friendly_name(src: str) -> str:
 def _materials() -> None:
     st.title("📁 My Materials")
     st.markdown(
-        "Upload your actual lecture PDFs, slide decks, markdown notes, "
-        "and **photos of handwritten notes**. The workspace will OCR, chunk, "
-        "and index everything so you can ask questions over it."
+        "Upload your lecture PDFs, slide decks, markdown notes, "
+        "and **photos of handwritten notes**. Everything is indexed locally — "
+        "files are **never committed to GitHub**."
     )
 
     # ── Upload section ────────────────────────────────────────────────────────
@@ -396,7 +394,7 @@ def _materials() -> None:
                 "📝 Notes (md/txt)":      "notes",
                 "✍️ Handwritten photo":   "handwritten",
             }
-            allowed = ext_map[doc_type]
+            allowed  = ext_map[doc_type]
             category = cat_map[doc_type]
 
             uploaded = st.file_uploader(
@@ -407,10 +405,12 @@ def _materials() -> None:
             )
 
         if uploaded:
-            dest_dir = PROJECT_ROOT / "corpus" / category
+            # ── Save to data/uploads/{category}/ — gitignored, never in repo ──
+            from src.config import UPLOADS_DIR
+            dest_dir = UPLOADS_DIR / category
             dest_dir.mkdir(parents=True, exist_ok=True)
 
-            st.markdown(f"**{len(uploaded)} file(s) selected:**")
+            st.markdown(f"**{len(uploaded)} file(s) ready to upload:**")
             saved_paths = []
             for f in uploaded:
                 dest = dest_dir / f.name
@@ -428,12 +428,17 @@ def _materials() -> None:
             st.markdown("")
             if st.button("🚀 Index uploaded files", type="primary", use_container_width=True):
                 _ingest_files(saved_paths, category)
+                # Invalidate sidebar caches so chunk count / doc list refresh
+                from src.app.sidebar import _chunk_count, _registered_docs
+                _chunk_count.clear()
+                _registered_docs.clear()
 
     st.markdown("")
 
     # ── Already indexed ───────────────────────────────────────────────────────
     with st.container(border=True):
         st.subheader("Indexed documents")
+        st.caption("Click 🗑️ Delete to remove a document from the index.")
 
         try:
             from src.ingestion.indexer import DocumentRegistry
@@ -444,51 +449,56 @@ def _materials() -> None:
 
         if not docs:
             st.info(
-                "No documents indexed yet. Upload files above and click **Index uploaded files**, "
-                "or use the synthetic corpus below."
+                "No documents indexed yet. Upload files above and click **Index uploaded files**."
             )
         else:
             fmt_icon = {"pdf-lecture":"📄","pdf-slide":"📊","markdown":"📝",
                         "text":"📄","handwritten":"✍️","image-ocr":"✍️"}
             for doc in docs:
                 icon = fmt_icon.get(doc.get("format",""),"📄")
-                c1, c2, c3, c4 = st.columns([3, 1, 1, 1])
+                c1, c2, c3, c4, c5 = st.columns([3, 1, 1, 1, 0.6])
                 c1.markdown(f"{icon} **{doc['source_file']}**")
                 c2.caption(f"{doc.get('page_count','?')} pages")
                 c3.caption(f"{doc.get('chunk_count','?')} chunks")
                 c4.caption(doc.get('ingested_at','')[:10])
+                if c5.button("🗑️", key=f"del_{doc['source_file']}",
+                             help=f"Remove {doc['source_file']} from the index"):
+                    _delete_document(doc['source_file'])
+                    from src.app.sidebar import _chunk_count, _registered_docs
+                    _chunk_count.clear()
+                    _registered_docs.clear()
+                    st.rerun()
 
-    st.markdown("")
 
-    # ── Synthetic corpus (fallback) ───────────────────────────────────────────
-    with st.expander("🧪 Use synthetic demo corpus (no real files needed)", expanded=False):
-        st.markdown(
-            "Generates a fake 60-page Algorithms & Data Structures course — "
-            "useful for testing the app before you upload real materials."
-        )
-        force = st.checkbox("Force re-generate")
-        if st.button("Generate demo corpus"):
-            with st.spinner("Generating…"):
-                import subprocess, sys as _sys
-                r = subprocess.run(
-                    [_sys.executable, "corpus/generate_corpus.py"],
-                    capture_output=True, text=True, cwd=str(PROJECT_ROOT)
-                )
-                if r.returncode == 0:
-                    st.success("Demo corpus generated!")
-                else:
-                    st.error(r.stderr[-500:])
+def _delete_document(source_file: str) -> None:
+    """Remove a document fully from ChromaDB, BM25 index, and SQLite registry."""
+    import sqlite3
+    from src.config import SQLITE_PATH
+    from src.retrieval.vector_store import get_vector_store
 
-        if st.button("🚀 Ingest demo corpus", type="primary"):
-            with st.spinner("Ingesting all corpus files…"):
-                from src.ingestion.indexer import ingest_corpus
-                from src.config import CORPUS_DIR
-                summary = ingest_corpus(CORPUS_DIR, force_reingest=force)
-            st.success(f"Done — {summary['total_documents']} docs, {summary['total_chunks']} chunks")
-            if summary["errors"]:
-                for e in summary["errors"]:
-                    st.error(e)
-            st.rerun()
+    # 1. Remove chunks from ChromaDB that belong to this source file
+    try:
+        vs = get_vector_store()
+        all_chunks = vs.get_all_chunks()
+        ids_to_delete = [
+            c["chunk_id"] for c in all_chunks
+            if c.get("metadata", {}).get("source_file", "") == source_file
+        ]
+        if ids_to_delete:
+            vs._collection.delete(ids=ids_to_delete)
+    except Exception as exc:
+        st.warning(f"Could not remove from vector store: {exc}")
+
+    # 2. Remove from SQLite registry
+    try:
+        conn = sqlite3.connect(str(SQLITE_PATH))
+        conn.execute("DELETE FROM documents WHERE source_file = ?", (source_file,))
+        conn.commit()
+        conn.close()
+    except Exception as exc:
+        st.warning(f"Could not remove from registry: {exc}")
+
+    st.success(f"✅ '{source_file}' removed from the index.")
 
 
 def _ingest_files(paths: list[Path], category: str) -> None:

@@ -8,6 +8,7 @@ from typing import Any, Optional
 
 import numpy as np
 import chromadb
+import streamlit as st
 
 from src.config import CHROMA_DIR, CHROMA_COLLECTION
 from src.ingestion.chunker import Chunk
@@ -131,8 +132,7 @@ class VectorStore:
 _store: Optional[VectorStore] = None
 
 
+@st.cache_resource(show_spinner=False)
 def get_vector_store() -> VectorStore:
-    global _store
-    if _store is None:
-        _store = VectorStore()
-    return _store
+    """Return a singleton VectorStore, cached across rerenders by Streamlit."""
+    return VectorStore()

@@ -1,6 +1,7 @@
 """
 Configuration module for the Study Workspace.
-Loads settings from environment variables / .env file.
+Loads settings from environment variables / .env file, with optional
+fallback from Streamlit secrets.toml.
 """
 import os
 from pathlib import Path
@@ -10,19 +11,32 @@ from dotenv import load_dotenv
 load_dotenv(Path(__file__).parent.parent / ".env")
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
-PROJECT_ROOT = Path(__file__).parent.parent
-CORPUS_DIR   = PROJECT_ROOT / "corpus"
-DATA_DIR     = PROJECT_ROOT / "data"
-CHROMA_DIR   = DATA_DIR / os.getenv("CHROMA_PATH", "chroma")
-SQLITE_PATH  = DATA_DIR / os.getenv("SQLITE_PATH", "study_workspace.db")
+PROJECT_ROOT    = Path(__file__).parent.parent
+CORPUS_DIR      = PROJECT_ROOT / "corpus"
+DATA_DIR        = PROJECT_ROOT / "data"
+UPLOADS_DIR     = DATA_DIR / "uploads"       # where UI-uploaded files are saved
+CHROMA_DIR      = DATA_DIR / os.getenv("CHROMA_PATH", "chroma")
+SQLITE_PATH     = DATA_DIR / os.getenv("SQLITE_PATH", "study_workspace.db")
 PAGE_IMAGES_DIR = DATA_DIR / "page_images"
 
-# Create data directories on import
-for d in [DATA_DIR, CHROMA_DIR, PAGE_IMAGES_DIR]:
+# Create required directories on import (uploads, chroma, page_images only)
+for d in [DATA_DIR, UPLOADS_DIR, CHROMA_DIR, PAGE_IMAGES_DIR]:
     d.mkdir(parents=True, exist_ok=True)
 
 # ── LLM Settings ───────────────────────────────────────────────────────────────
-GEMINI_API_KEY       = os.getenv("GEMINI_API_KEY", "")
+def _get_api_key() -> str:
+    """Read Gemini API key from: env var → .env → streamlit secrets (at runtime)."""
+    key = os.getenv("GEMINI_API_KEY", "")
+    if not key:
+        # Try Streamlit secrets if running inside Streamlit
+        try:
+            import streamlit as st
+            key = st.secrets.get("GEMINI_API_KEY", "")
+        except Exception:
+            pass
+    return key
+
+GEMINI_API_KEY       = _get_api_key()
 GEMINI_MODEL         = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 GEMINI_VISION_MODEL  = os.getenv("GEMINI_VISION_MODEL", "gemini-2.5-flash")
 
