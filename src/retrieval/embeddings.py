@@ -5,7 +5,6 @@ from __future__ import annotations
 
 from typing import Optional
 import numpy as np
-from sentence_transformers import SentenceTransformer
 
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 
@@ -15,11 +14,12 @@ class EmbeddingModel:
 
     def __init__(self, model_name: str = EMBEDDING_MODEL) -> None:
         self._model_name = model_name
-        self._model: Optional[SentenceTransformer] = None
+        self._model = None
 
     @property
-    def model(self) -> SentenceTransformer:
+    def model(self):
         if self._model is None:
+            from sentence_transformers import SentenceTransformer
             self._model = SentenceTransformer(self._model_name)
         return self._model
 

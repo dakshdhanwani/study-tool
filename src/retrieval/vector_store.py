@@ -27,9 +27,17 @@ class VectorStore:
         self._persist_dir = Path(persist_dir)
         self._collection_name = collection_name
         self._client = chromadb.PersistentClient(path=str(self._persist_dir))
+        
+        # Prevent Chroma from loading default ONNX embedder
+        from chromadb.api.types import EmbeddingFunction
+        class DummyEF(EmbeddingFunction):
+            def __call__(self, input: list[str]) -> list[list[float]]: return []
+            def name(self) -> str: return "default"
+                
         self._collection = self._client.get_or_create_collection(
             name=self._collection_name,
             metadata={"hnsw:space": "cosine"},
+            embedding_function=DummyEF(),
         )
 
     def add_chunks(self, chunks: list[Chunk]) -> None:

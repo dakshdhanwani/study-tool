@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from sentence_transformers import CrossEncoder
+
 
 RERANKER_MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 
@@ -15,11 +15,12 @@ class Reranker:
 
     def __init__(self, model_name: str = RERANKER_MODEL) -> None:
         self._model_name = model_name
-        self._model: Optional[CrossEncoder] = None
+        self._model = None
 
     @property
-    def model(self) -> CrossEncoder:
+    def model(self):
         if self._model is None:
+            from sentence_transformers import CrossEncoder
             self._model = CrossEncoder(self._model_name)
         return self._model
 
