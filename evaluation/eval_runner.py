@@ -17,7 +17,7 @@ from datetime import datetime
 
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
-
+# Add the project root to the Python path
 EVAL_PATH = PROJECT_ROOT / "evaluation" / "questions.json"
 RESULTS_DIR = PROJECT_ROOT / "evaluation" / "results"
 
