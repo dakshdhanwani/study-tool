@@ -1,7 +1,31 @@
+# Environment & secrets
 .env
+.streamlit/secrets.toml
+
+# Python cache
 __pycache__/
 *.py[cod]
-data/**/*.db
-data/**/*.db-shm
-data/**/*.db-wal
-data/**/*.sqlite3
+*.pyo
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# All user data (uploaded files, local DBs, temp images, vector indexes)
+data/
+corpus/
+
+# Keep placeholder files so folder structure is preserved in git
+!data/.gitkeep
+!corpus/.gitkeep
+!corpus/lectures/.gitkeep
+!corpus/slides/.gitkeep
+!corpus/notes/.gitkeep
+!corpus/handwritten/.gitkeep
+
+# Evaluation outputs
+evaluation/results/
+
+# OS junk
+.DS_Store
+Thumbs.db
