@@ -33,14 +33,7 @@ st.markdown("""
 <style>
 /* ── Reset Streamlit chrome ──────────────────────────────────────────────── */
 #MainMenu, footer { visibility: hidden !important; height: 0 !important; }
-.block-container { padding: 1.2rem 1rem 2rem !important; max-width: 100% !important; }
-header[data-testid="stHeader"] { background: transparent !important; height: 0 !important; }
-
-/* Hide Stop / Deploy / Share / status toolbar */
-[data-testid="stToolbar"]    { display: none !important; }
-[data-testid="stDecoration"] { display: none !important; }
-[data-testid="stStatusWidget"]  { display: none !important; }
-[data-testid="stDeployButton"]  { display: none !important; }
+.block-container { padding-left: 1rem !important; padding-right: 1rem !important; padding-bottom: 2rem !important; max-width: 100% !important; }
 
 /* ── Sidebar — dark navy ─────────────────────────────────────────────────── */
 [data-testid="stSidebar"] {
