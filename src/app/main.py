@@ -498,10 +498,10 @@ if "user_id" not in st.session_state:
 
 user_id = st.session_state["user_id"]
 
-# Conversation memory backed by Supabase PostgreSQL
+# Conversation memory backed by Supabase or Local SQLite
 if "memory" not in st.session_state:
-    from src.storage.memory_supa import SupabaseConversationMemory
-    st.session_state.memory = SupabaseConversationMemory(user_id)
+    from src.app.backend import get_memory
+    st.session_state.memory = get_memory(user_id)
 
 if "session_mgr" not in st.session_state:
     from src.conversation.session import SessionManager

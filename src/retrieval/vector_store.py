@@ -133,6 +133,12 @@ class VectorStore:
             output.append({"chunk_id": cid, "text": text, "metadata": meta})
         return output
 
+    def delete_chunks_for_document(self, source_file: str) -> None:
+        try:
+            self._collection.delete(where={"source_file": source_file})
+        except Exception:
+            pass
+
 
 _store: Optional[VectorStore] = None
 

@@ -21,8 +21,8 @@ sys.path.insert(0, str(PROJECT_ROOT))
 @st.cache_data(ttl=30, show_spinner=False)
 def _chunk_count(user_id: str) -> int:
     try:
-        from src.storage.vector_store_supa import SupabaseVectorStore
-        return SupabaseVectorStore(user_id).collection_size()
+        from src.app.backend import get_vector_store
+        return get_vector_store(user_id).collection_size()
     except Exception:
         return 0
 
@@ -30,8 +30,8 @@ def _chunk_count(user_id: str) -> int:
 @st.cache_data(ttl=30, show_spinner=False)
 def _registered_docs(user_id: str) -> list[dict]:
     try:
-        from src.storage.registry_supa import SupabaseDocumentRegistry
-        return SupabaseDocumentRegistry(user_id).list_documents()
+        from src.app.backend import get_registry
+        return get_registry(user_id).list_documents()
     except Exception:
         return []
 

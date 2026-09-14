@@ -93,6 +93,10 @@ class DocumentRegistry:
         ).fetchone()
         return dict(row) if row else None
 
+    def delete_document(self, source_file: str) -> None:
+        self._conn.execute("DELETE FROM documents WHERE source_file = ?", (source_file,))
+        self._conn.commit()
+
 
 # ── Ingestion pipeline ────────────────────────────────────────────────────────
 

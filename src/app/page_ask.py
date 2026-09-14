@@ -82,8 +82,8 @@ def _run_query(q: str) -> None:
         user_id = st.session_state.get("user_id", "")
 
         # ── Check if user has any indexed documents ───────────────────────────
-        from src.storage.vector_store_supa import SupabaseVectorStore
-        vs = SupabaseVectorStore(user_id)
+        from src.app.backend import get_vector_store
+        vs = get_vector_store(user_id)
         if vs.collection_size() == 0:
             st.warning("No documents indexed yet. Go to **📄 Materials** and upload files first.")
             return
@@ -629,8 +629,8 @@ def _materials() -> None:
 
     # ── Processing status bar ─────────────────────────────────────────────────
     try:
-        from src.storage.registry_supa import SupabaseDocumentRegistry
-        docs = SupabaseDocumentRegistry(user_id).list_documents()
+        from src.app.backend import get_registry
+        docs = get_registry(user_id).list_documents()
         total_pages  = sum(int(d.get("page_count", 0) or 0) for d in docs)
         total_chunks = sum(int(d.get("chunk_count", 0) or 0) for d in docs)
         if total_pages > 0:
@@ -690,8 +690,8 @@ def _materials() -> None:
 
             for f in uploaded:
                 try:
-                    from src.storage.file_store import upload_file
-                    storage_path = upload_file(
+                    from src.app.backend import upload_file_backend
+                    storage_path = upload_file_backend(
                         user_id=user_id,
                         category=category,
                         filename=f.name,
@@ -724,7 +724,12 @@ def _materials() -> None:
                 "🚀 Index uploaded files", type="primary",
                 use_container_width=True, key="mat_index_btn",
             ):
-                _ingest_files_cloud(user_id, successful, category)
+                from src.app.backend import is_local_mode
+                if is_local_mode():
+                    paths = [Path(sp) for f, sp in successful]
+                    _ingest_files(paths, category)
+                else:
+                    _ingest_files_cloud(user_id, successful, category)
                 from src.app.sidebar import _chunk_count, _registered_docs
                 _chunk_count.clear()
                 _registered_docs.clear()
@@ -739,8 +744,8 @@ def _materials() -> None:
         st.caption("Click 🗑️ to remove a document from the index and storage.")
 
         try:
-            from src.storage.registry_supa import SupabaseDocumentRegistry
-            docs = SupabaseDocumentRegistry(user_id).list_documents()
+            from src.app.backend import get_registry
+            docs = get_registry(user_id).list_documents()
         except Exception:
             docs = []
 
@@ -1107,28 +1112,25 @@ def _evaluation() -> None:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _delete_document(user_id: str, source_file: str, storage_path: str = "") -> None:
-    """Remove a document from Supabase pgvector, registry, and Storage."""
+    """Remove a document from vectors, registry, and Storage."""
     # 1. Remove vectors
     try:
-        from src.storage.vector_store_supa import SupabaseVectorStore
-        SupabaseVectorStore(user_id).delete_chunks_for_document(source_file)
+        from src.app.backend import get_vector_store
+        get_vector_store(user_id).delete_chunks_for_document(source_file)
     except Exception as exc:
         st.warning(f"Could not remove vectors: {exc}")
 
     # 2. Remove from document registry
     try:
-        from src.storage.registry_supa import SupabaseDocumentRegistry
-        SupabaseDocumentRegistry(user_id).delete_document(source_file)
+        from src.app.backend import get_registry
+        get_registry(user_id).delete_document(source_file)
     except Exception as exc:
         st.warning(f"Could not remove registry entry: {exc}")
 
-    # 3. Remove file from Supabase Storage
+    # 3. Remove file
     if storage_path:
-        try:
-            from src.storage.file_store import delete_file
-            delete_file(storage_path)
-        except Exception:
-            pass   # non-fatal
+        from src.app.backend import delete_file_backend
+        delete_file_backend(storage_path)
 
     st.success(f"✅ '{source_file}' removed.")
 
